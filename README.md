@@ -8,11 +8,8 @@ For an intelligent transportation system, when we hope to go somewhere, it is po
 would be very important to us. This competition requires us to predict the trip time given the starting point and ending point.
 
 ## Data observation
+![data information](https://github.com/SeanCsc/Taxi-trip-time-prediction/blob/master/other/data_info.jpg)
 
-| First Header  | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header |
-| ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
 
 ## Data Preprocessing and Exploration
 
