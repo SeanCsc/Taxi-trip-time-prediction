@@ -8,11 +8,11 @@ For an intelligent transportation system, when we hope to go somewhere, it is po
 would be very important to us. This competition requires us to predict the trip time given the starting point and ending point.
 
 ## Data observation
-	id	vendor_id	pickup_datetime	dropoff_datetime	passenger_count	pickup_longitude	pickup_latitude	dropoff_longitude	dropoff_latitude	store_and_fwd_flag	trip_duration
-0	id2875421	2	2016-03-14 17:24:55	2016-03-14 17:32:30	1	-73.982	40.768	-73.965	40.766	N	455
-1	id2377394	1	2016-06-12 00:43:35	2016-06-12 00:54:38	1	-73.980	40.739	-73.999	40.731	N	663
-2	id3858529	2	2016-01-19 11:35:24	2016-01-19 12:10:48	1	-73.979	40.764	-74.005	40.710	N	2124
-3	id3504673	2	2016-04-06 19:32:31	2016-04-06 19:39:40	1	-74.010	40.720	-74.012	40.707	N	429
+
+| First Header  | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header | Second Header |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
 
 ## Data Preprocessing and Exploration
 
