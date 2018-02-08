@@ -15,7 +15,16 @@ This could bring me what the data look like and what the features it have. The l
 Possible informative features: time(month, week, day, hour), distance, weather, passenger numbers. So firstly, I would extract these features from the raw data.
 
 <1> data clean-up. I noticed that the some records show that the duration time is between 1s to 980 hours. It may be a good trial to exclude some outliers. Also, for the location, I would exclude the points that are outside NY city. 
-<2> Deal with the trip duration. Because the metrics is using log, so I tried log transformation for the trip duration.
+
+```python
+m = np.mean(train['trip_duration'])
+s = np.std(train['trip_duration'])
+train = train[train['trip_duration'] <= m + 2*s]
+train = train[train['trip_duration'] >= m - 2*s]
+```
+
+<2> Deal with the trip duration. Because the metrics is using log, so I tried log transformation for the trip duration. Then I plot the histogram.
+
 ```python
 train['log_trip_duration'] = np.log(train['trip_duration'].values + 1)
 plt.hist(train['log_trip_duration'].values, bins=100)
@@ -24,67 +33,56 @@ plt.ylabel('number of train records')
 plt.show()
 sns.distplot(train["log_trip_duration"], bins =100)
 ```
+<3> We can also check the relationship between the trip duration and passenger numbers. But the results shows that there are not too much relationship between them.
 
-
-
-
-
-
-For the data preprocessing and exploration
-
-  1. Load the csv files
-  2. Fill in the missing values. Most of the missing value of features are because of lack of that feature, such as fence, I filled them with None. For some numerical feature, I fill them with the mean value of the neighbors or 0.
-  3. For non-numerical features, use get_dummies to transform them to 0/1 value.
-  
 ## Feature Engineering
-  1. Feature importance. Use Lasso to measure the importance of feature and drop the feature with 0 variance.
-  2. Add related features like total square
-  3. Standarization and Normalization
-  
-## Model Selection
+<1> Extract the distanc: harvesine distance -> manhantan distance -> direction
+Thanks to [Beluga]https://www.kaggle.com/gaborfodor/from-eda-to-the-top-lb-0-367 , we can get the distance feature with the location.
+```python
+def haversine_array(lat1, lng1, lat2, lng2):
+    lat1, lng1, lat2, lng2 = map(np.radians, (lat1, lng1, lat2, lng2))
+    AVG_EARTH_RADIUS = 6371  # in km
+    lat = lat2 - lat1
+    lng = lng2 - lng1
+    d = np.sin(lat * 0.5) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(lng * 0.5) ** 2
+    h = 2 * AVG_EARTH_RADIUS * np.arcsin(np.sqrt(d))
+    return h
 
-Because this is a regression problem. So I decided to use linear model, like ridge and lasso regression, elastic-net. Besides, I use Tree model like XGBT. 
+def dummy_manhattan_distance(lat1, lng1, lat2, lng2):
+    a = haversine_array(lat1, lng1, lat1, lng2)
+    b = haversine_array(lat1, lng1, lat2, lng1)
+    return a + b
 
-## Model Evaluation
-I use 5-fold to do cross-validation and negative MSE as the measurement of the performance for model.
+def bearing_array(lat1, lng1, lat2, lng2):
+    AVG_EARTH_RADIUS = 6371  # in km
+    lng_delta_rad = np.radians(lng2 - lng1)
+    lat1, lng1, lat2, lng2 = map(np.radians, (lat1, lng1, lat2, lng2))
+    y = np.sin(lng_delta_rad) * np.cos(lat2)
+    x = np.cos(lat1) * np.sin(lat2) - np.sin(lat1) * np.cos(lat2) * np.cos(lng_delta_rad)
+    return np.degrees(np.arctan2(y, x))
+```
+<2> Visualize the pick-up location as cluster (k-means)
+An advantage to use k-means:we can find common things for the scattered location
+<3> Date extraction
+<4> Deal with categorical features : one-hot coding
 
-## Model Training
-For the linear model, I use cross-validation to choose the best parameter among 5 candidates. For tree models, I use grid search twice to determine the max depth, number of trees. 
+```python
+get_dummies
+```
+<5> Check
+But there is an mismatch (which is because there are some numbers that haven't shown in the training)
 
 
-## Ensemble Generation
 
-Ensemble Learning refers to the technique of combining different models. It reduces both bias and variance of the final model, thus increasing the score and reducing the risk of overfitting. I mainly use the idea of stack, which is use the output of basic models as the input for the final model. In terms of basic models, I choose to average the models elastic net, GBoost and kernel-ridge. For the meta model, I use the linear model lasso.
-[stack in practice](http://blog.kaggle.com/2016/12/27/a-kagglers-guide-to-model-stacking-in-practice/)
+## Model selection: XGBoost is my first trial. 
+use grid-search to find the hyperparameters.
 
-## Results
 
-My submission is currently ranked in the Top 10% on Kaggle and this can certainly be improved.
 
-## Tools Utilized
 
-####Stack:
 
-* python
 
-####Modeling:
 
-* numpy
-* scipy
-* pandas
-* scikit-learn
-* xgboost
-* model-selection
-
-####Statistics observation:
-
-* matplotlib
-* seaborn
-
-## Update
-
-v1.2 Skewness analysis
-For linear regression model, it assumes that the residual satisfies the normal distribution. Therefore, skewness should be avoided. Besides, for price data, it is more sensable to use log. 
-[deal with skewness](https://becominghuman.ai/how-to-deal-with-skewed-dataset-in-machine-learning-afd2928011cc)
-
-v1.3 For XGBT model parameter tuning, set the default parameters and use ROC-AUC to firstly have a sense about overfitting or underfitting. Then change related parameters.
+## update:
+<1> Data enrichment: use other sources of data
+<2> Ensemble
