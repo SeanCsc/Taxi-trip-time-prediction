@@ -10,8 +10,25 @@ would be very important to us. This competition requires us to predict the trip 
 ## Data observation
 ![data information](https://github.com/SeanCsc/Taxi-trip-time-prediction/blob/master/other/data_info.jpg)
 
-
+This could bring me what the data look like and what the features it have. The location and time would the core for this competition.
 ## Data Preprocessing and Exploration
+Possible informative features: time(month, week, day, hour), distance, weather, passenger numbers. So firstly, I would extract these features from the raw data.
+
+<1> data clean-up. I noticed that the some records show that the duration time is between 1s to 980 hours. It may be a good trial to exclude some outliers. Also, for the location, I would exclude the points that are outside NY city. 
+<2> Deal with the trip duration. Because the metrics is using log, so I tried log transformation for the trip duration.
+```python
+train['log_trip_duration'] = np.log(train['trip_duration'].values + 1)
+plt.hist(train['log_trip_duration'].values, bins=100)
+plt.xlabel('log(trip_duration)')
+plt.ylabel('number of train records')
+plt.show()
+sns.distplot(train["log_trip_duration"], bins =100)
+```
+
+
+
+
+
 
 For the data preprocessing and exploration
 
